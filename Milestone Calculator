@@ -1,0 +1,91 @@
+package org.example;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class GradeCalculator extends JFrame implements ActionListener {
+    private JLabel milestone1Label, milestone2Label, terminalAssessmentLabel, totalGradeLabel;
+    private JTextField milestone1TextField, milestone2TextField, terminalAssessmentTextField, totalGradeTextField;
+    private JButton calculateButton, resetButton;
+
+    public GradeCalculator() {
+        setTitle("Milestone Calculator");
+        setLayout(new GridLayout(5, 2));
+
+        milestone1Label = new JLabel("Milestone 1 (25%):");
+        milestone2Label = new JLabel("Milestone 2 (40%):");
+        terminalAssessmentLabel = new JLabel("Terminal Assessment (35%):");
+        totalGradeLabel = new JLabel("Total Grade:");
+
+        milestone1TextField = new JTextField(10);
+        milestone2TextField = new JTextField(10);
+        terminalAssessmentTextField = new JTextField(10);
+        totalGradeTextField = new JTextField(10);
+        totalGradeTextField.setEditable(false);
+
+        calculateButton = new JButton("Calculate");
+        resetButton = new JButton("Reset");
+
+        add(milestone1Label);
+        add(milestone1TextField);
+        add(milestone2Label);
+        add(milestone2TextField);
+        add(terminalAssessmentLabel);
+        add(terminalAssessmentTextField);
+        add(totalGradeLabel);
+        add(totalGradeTextField);
+        add(calculateButton);
+        add(resetButton);
+
+        calculateButton.addActionListener(this);
+        resetButton.addActionListener(this);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == calculateButton) {
+            try {
+                double milestone1 = Double.parseDouble(milestone1TextField.getText());
+                double milestone2 = Double.parseDouble(milestone2TextField.getText());
+                double terminalAssessment = Double.parseDouble(terminalAssessmentTextField.getText());
+
+                if (milestone1 < 0 || milestone1 > 25 || milestone2 < 0 || milestone2 > 40 || terminalAssessment < 0 || terminalAssessment > 35) {
+                    throw new IllegalArgumentException("Invalid input");
+                }
+
+                double totalScore = (milestone1 * 0.25) + (milestone2 * 0.4) + (terminalAssessment * 0.35);
+                int roundedPercentage;
+                if (Math.abs(totalScore - 100.0) < 1e-6) {
+                    // If the total score is within 1e-6 of 100, display a grade of 100
+                    roundedPercentage = 100;
+                } else {
+                    double totalPercentage = totalScore / 100.0 * 100.0;
+                    roundedPercentage = (int) Math.round(totalPercentage);
+                    if (roundedPercentage == 100 && totalPercentage < 100.0) {
+                        roundedPercentage = 99; // adjust to 99 if the percentage is slightly below 100
+                    }
+                }
+
+                totalGradeTextField.setText(Integer.toString(roundedPercentage));
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid input format", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (e.getSource() == resetButton) {
+            milestone1TextField.setText("");
+            milestone2TextField.setText("");
+            terminalAssessmentTextField.setText("");
+            totalGradeTextField.setText("");
+        }
+    }
+
+
+
+
+    public static void main(String[] args) {
+        GradeCalculator calculator = new GradeCalculator();
+        calculator.setSize(400, 200);
+        calculator.setVisible(true);
+    }
+}
